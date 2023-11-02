@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { View, Button, StyleSheet } from "react-native";
+import { View, Button, StyleSheet, Text } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     container: {
@@ -12,7 +13,8 @@ const styles = StyleSheet.create({
 });
 
 const Upload = () => {
-    const [selectedVideo, setSelectedVideo] = useState(null);
+    const [selectedVideo, setSelectedVideo] = useState({uri: ''});
+    const navigation = useNavigation();
 
     const pickVideo = async () => {
         try {
@@ -43,14 +45,14 @@ const Upload = () => {
             });
 
             try {
-                let response = await fetch("http://172.30.1.54:5000/test", {
+                let response = await fetch("http://172.30.1.83:5000/test", {
                     method: 'post',
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                     body: formData
                 });
-                alert(await response.json() + '번 반복!!')
+                navigation.navigate('Calendar');
             }
             catch (error) {
                 console.log('error : ' + error);
@@ -63,6 +65,7 @@ const Upload = () => {
         <View style={styles.container}>
             <Button title="비디오 선택" onPress={pickVideo} />
             <Button title="비디오 업로드" onPress={uploadVideo} />
+            <Text>{selectedVideo.uri}</Text>
         </View>
     )
 }

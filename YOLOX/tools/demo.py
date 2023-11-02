@@ -180,10 +180,6 @@ class Predictor(object):
         cls = output[:, 6]
         scores = output[:, 4] * output[:, 5]
 
-        # if self.cls_names[0] == 'barbel':
-        print(cls)
-        print(bboxes)
-    
         f.write(str(float(str(bboxes[1]).split(',')[1][1:-1]) + float(str(bboxes[1]).split(',')[3][1:-2])) + str(int(cls[0])) + ',')
         vis_res = vis(img, bboxes, scores, cls, cls_conf, ('barbel', 'bench_press', 'dead_lift'))
 

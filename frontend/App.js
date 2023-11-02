@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import Calender from './screens/calender';
+import Calendar from './screens/calendar';
 import Upload from './screens/upload';
 
 export default function App() {
@@ -8,9 +8,9 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name='Calender' component={Calender} />
-        <Tab.Screen name='Upload' component={Upload} />
+      <Tab.Navigator >
+        <Tab.Screen name='Calendar' component={Calendar} options={{unmountOnBlur: true}}/>
+        <Tab.Screen name='Upload' component={Upload} options={{unmountOnBlur: true}}/>
       </Tab.Navigator>
     </NavigationContainer>
   );

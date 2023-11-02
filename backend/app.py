@@ -4,7 +4,7 @@ import os
 import pymysql
 import numpy as np
 from scipy.optimize import fsolve
-import json
+from datetime import datetime
 
 db = pymysql.connect(host='127.0.0.1', user='root', password='ehrl159325!', db='HCI', charset='utf8')
 
@@ -13,15 +13,25 @@ CORS(app)
 
 @app.route('/', methods=('GET', ))
 def hello_pybo():
-    print('@@@@@@@@@@@@@@')
     cursor = db.cursor()
     sql_ = '''
-        SELECT * FROM LOGS
+        SELECT DISTINCT create_datetime FROM LOGS
         '''
     cursor.execute(sql_)
-    data = json.dumps(cursor.fetchall())
+    dates = cursor.fetchall()
+    sql__ = '''SELECT * FROM LOGS'''
+    cursor.execute(sql__)
+    datas = cursor.fetchall()
+    dict = {}
+    for date in dates:
+        for data in datas:
+            if data[3] == date[0]:
+                try:
+                    dict[str(date[0])].append(data)
+                except:
+                    dict[str(date[0])] = [data]
     cursor.close()
-    return data
+    return dict
 
 @app.route('/test', methods=('POST',))
 def create():
@@ -56,9 +66,9 @@ def create():
     cursor = db.cursor()
     sql = '''
             insert into logs (count, user_id, create_datetime, category)
-            values (%s, 1, '2023-10-28', %s)
+            values (%s, 1, %s, %s)
         '''
-    cursor.execute(sql, (count, category))
+    cursor.execute(sql, (count, datetime.now().strftime('%Y-%m-%d 00:00:00'), category))
     db.commit()
 
     return str(count)
