@@ -176,13 +176,17 @@ class Predictor(object):
 
         # preprocessing: resize
         bboxes /= ratio
-        # print(bboxes.split(',')[1])
-        f.write(str(float(str(bboxes[0]).split(',')[1][1:-1]) + float(str(bboxes[0]).split(',')[3][1:-2])) + ',')
 
         cls = output[:, 6]
         scores = output[:, 4] * output[:, 5]
 
-        vis_res = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
+        # if self.cls_names[0] == 'barbel':
+        print(cls)
+        print(bboxes)
+    
+        f.write(str(float(str(bboxes[1]).split(',')[1][1:-1]) + float(str(bboxes[1]).split(',')[3][1:-2])) + str(int(cls[0])) + ',')
+        vis_res = vis(img, bboxes, scores, cls, cls_conf, ('barbel', 'bench_press', 'dead_lift'))
+
         return vis_res
 
 
@@ -226,7 +230,7 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
         vid_writer = cv2.VideoWriter(
             save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (int(width), int(height))
         )
-    f = open(f"./backend/logs/temp.txt", 'w')
+    f = open(f"C:/Users/ws9706/OneDrive - 한양대학교/3-2/인간컴퓨터상호작용/backend/logs/temp.txt", 'w')
     while True:
         ret_val, frame = cap.read()
         if ret_val:
@@ -245,6 +249,7 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
     f.close()
 
 def main(exp, args):
+    logger.info(exp.num_classes)
     if not args.experiment_name:
         args.experiment_name = exp.exp_name
 

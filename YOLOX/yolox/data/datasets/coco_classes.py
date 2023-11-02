@@ -4,4 +4,6 @@
 
 COCO_CLASSES = (
     "barbel",
+    "bench_press",
+    "dead_lift",
 )

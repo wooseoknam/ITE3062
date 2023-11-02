@@ -29,9 +29,9 @@ def create():
     if video:
         video.save("C:/Users/ws9706/OneDrive - 한양대학교/3-2/인간컴퓨터상호작용/backend/videos/" + video.filename)
 
-    os.system(r'python C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/YOLOX/tools/demo.py video -f C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/YOLOX/exps/default/yolox_s.py -c C:/Users/ws9706/epoch_300_ckpt_1.pth --path C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/backend/videos/video.mp4 --conf 0.25 --nms 0.45 --tsize 640 --device cpu')
+    os.system(r'python C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/YOLOX/tools/demo.py video -f C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/YOLOX/exps/example/yolox_voc/yolox_voc_s.py -c C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/last_epoch_ckpt.pth --path C:/Users/ws9706/"OneDrive - 한양대학교"/3-2/인간컴퓨터상호작용/backend/videos/video.mp4 --conf 0.25 --nms 0.45 --tsize 640 --save_result --device cpu')
     
-    f = open("./backend/logs/temp.txt", 'r')
+    f = open("C:/Users/ws9706/OneDrive - 한양대학교/3-2/인간컴퓨터상호작용/backend/logs/temp.txt", 'r')
     lst = []
     while True:
         line = f.readline()
@@ -45,15 +45,20 @@ def create():
     dy = np.gradient(y_coordinates)
     zero_points = np.where(np.diff(np.sign(dy)))[0]
 
-    filtered_points = [(x_val, y_coordinates[x_val]) for x_val in zero_points if y_coordinates[x_val] >= 600]
+    if str(y_coordinates[0])[-1] == '2': 
+        filtered_points = [(x_val, y_coordinates[x_val]) for x_val in zero_points if y_coordinates[x_val] >= 1000]
+        category = 'dead_lift'
+    else: 
+        filtered_points = [(x_val, y_coordinates[x_val]) for x_val in zero_points if y_coordinates[x_val] >= 625 and y_coordinates[x_val] < 650] 
+        category = 'bench_press'
 
     count = len(filtered_points)
     cursor = db.cursor()
     sql = '''
-            insert into logs (count, user_id, create_datetime)
-            values (%s, 1, '2023-10-28')
+            insert into logs (count, user_id, create_datetime, category)
+            values (%s, 1, '2023-10-28', %s)
         '''
-    cursor.execute(sql, (count))
+    cursor.execute(sql, (count, category))
     db.commit()
 
     return str(count)
