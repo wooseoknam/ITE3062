@@ -33,6 +33,22 @@ def hello_pybo():
     cursor.close()
     return dict
 
+@app.route('/detail', methods=('GET', ))
+def detail():
+    date = request.args.get('date')
+    cursor = db.cursor()
+    sql = '''SELECT * FROM LOGS WHERE create_datetime = %s'''
+    cursor.execute(sql, (date))
+    data = cursor.fetchall()
+    dict = {}
+    for item in data:
+        try:
+            dict[item[4]].append(item[1])
+        except:
+            dict[item[4]] = [item[1]]
+    cursor.close()
+    return dict
+
 @app.route('/test', methods=('POST',))
 def create():
     video = request.files['video']
@@ -68,10 +84,30 @@ def create():
             insert into logs (count, user_id, create_datetime, category)
             values (%s, 1, %s, %s)
         '''
-    cursor.execute(sql, (count, datetime.now().strftime('%Y-%m-%d 00:00:00'), category))
+    # cursor.execute(sql, (count, datetime.now().strftime('%Y-%m-%d 00:00:00'), category))
+    cursor.execute(sql, (count, request.args.get('date'), category))
     db.commit()
 
     return str(count)
+
+@app.route('/community', methods=('GET',))
+def community():
+    cursor = db.cursor()
+    sql = '''SELECT * FROM QUESTION'''
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
+
+@app.route('/community_detail', methods=('GET', ))
+def community_detail():
+    cursor = db.cursor()
+    id = request.args.get('id')
+    sql = '''SELECT * FROM QUESTION WHERE ID = %s'''
+    cursor.execute(sql, (id))
+    data = cursor.fetchall()
+    cursor.close()
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

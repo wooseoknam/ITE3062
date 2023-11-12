@@ -1,18 +1,10 @@
-import { useState } from "react";
-import { View, Button, StyleSheet, Text } from "react-native";
-import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import { Button, Text, View } from 'react-native'
+import * as ImagePicker from 'expo-image-picker';
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-});
-
-const Upload = () => {
+const Detail = ({ route }) => {
+    const [data, setData] = useState([])
     const [selectedVideo, setSelectedVideo] = useState({uri: ''});
     const navigation = useNavigation();
 
@@ -45,7 +37,7 @@ const Upload = () => {
             });
 
             try {
-                let response = await fetch("http://172.30.1.71:5000/test", {
+                let response = await fetch(`http://172.30.1.71:5000/test?date=${encodeURIComponent(route.params.day.dateString)}`, {
                     method: 'post',
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -61,8 +53,20 @@ const Upload = () => {
         }
     };
 
+    useEffect(() => {
+        fetch(`http://172.30.1.71:5000/detail?date=${encodeURIComponent(route.params.day.dateString)}`)
+        .then(response => response.json())
+        .then(response => {
+            setData(response);
+        })
+    }, [])
+
     return (
-        <View style={styles.container}>
+        <View>
+            <Text>{route.params.day.dateString}</Text>
+            {Object.entries(data).map(([category, reps]) => (
+              <Text key={reps}>{category}: {reps}회</Text>  
+            ))}
             <Button title="비디오 선택" onPress={pickVideo} />
             <Button title="비디오 업로드" onPress={uploadVideo} />
             <Text>{selectedVideo.uri}</Text>
@@ -70,4 +74,4 @@ const Upload = () => {
     )
 }
 
-export default Upload;
+export default Detail
