@@ -37,7 +37,7 @@ const Detail = ({ route }) => {
             });
 
             try {
-                let response = await fetch(`http://172.30.1.71:5000/test?date=${encodeURIComponent(route.params.day.dateString)}`, {
+                let response = await fetch(`http://172.30.1.82:5000/test?date=${encodeURIComponent(route.params.day.dateString)}`, {
                     method: 'post',
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -54,7 +54,7 @@ const Detail = ({ route }) => {
     };
 
     useEffect(() => {
-        fetch(`http://172.30.1.71:5000/detail?date=${encodeURIComponent(route.params.day.dateString)}`)
+        fetch(`http://localhost:5000/detail?date=${encodeURIComponent(route.params.day.dateString)}`)
         .then(response => response.json())
         .then(response => {
             setData(response);
@@ -65,7 +65,16 @@ const Detail = ({ route }) => {
         <View>
             <Text>{route.params.day.dateString}</Text>
             {Object.entries(data).map(([category, reps]) => (
-              <Text key={reps}>{category}: {reps}회</Text>  
+              <View key={category}>
+                <Text>{category}:</Text>
+                {Array.isArray(reps) && reps.length > 0 ? (
+                  reps.map((rep, index) => (
+                    <Text key={index}>{index + 1}세트: {rep}회</Text>
+                  ))
+                ) : (
+                  <Text></Text>
+                )}
+              </View>
             ))}
             <Button title="비디오 선택" onPress={pickVideo} />
             <Button title="비디오 업로드" onPress={uploadVideo} />

@@ -19,7 +19,7 @@ const CalendarPage = ({navigation}) => {
     // };
 
     useEffect(() => {
-        fetch('http://172.30.1.71:5000/')
+        fetch('http://localhost:5000/')
         .then(response => response.json())
         .then(response => {
             setData(response)

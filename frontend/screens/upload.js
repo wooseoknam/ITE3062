@@ -45,7 +45,7 @@ const Upload = () => {
             });
 
             try {
-                let response = await fetch("http://172.30.1.71:5000/test", {
+                let response = await fetch("http://localhost:5000/test", {
                     method: 'post',
                     headers: {
                         'Content-Type': 'multipart/form-data',

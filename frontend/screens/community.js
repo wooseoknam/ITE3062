@@ -5,7 +5,7 @@ const Community = ({navigation}) => {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        fetch('http://172.30.1.71:5000/community')
+        fetch('http://localhost:5000/community')
         .then(response => response.json())
         .then(response => {
             setData(response);

@@ -79,14 +79,30 @@ def create():
         category = 'bench_press'
 
     count = len(filtered_points)
-    cursor = db.cursor()
-    sql = '''
-            insert into logs (count, user_id, create_datetime, category)
-            values (%s, 1, %s, %s)
-        '''
-    # cursor.execute(sql, (count, datetime.now().strftime('%Y-%m-%d 00:00:00'), category))
-    cursor.execute(sql, (count, request.args.get('date'), category))
-    db.commit()
+
+    threshold = 100
+    divided_lists = [[filtered_points[0]]]
+    # [[(13, 641.1151), (42, 635.78631), (70, 640.49461), (98, 640.9889000000001)], [(247, 641.18531), (276, 641.07321), (304, 641.29241), (332, 641.36691)]]
+
+    for i in range(1, len(filtered_points)):
+        if filtered_points[i][0] - filtered_points[i-1][0] >= threshold:
+            divided_lists.append([])
+        divided_lists[-1].append(filtered_points[i])
+
+    try:
+        cursor = db.cursor()
+        for idx, item in enumerate(divided_lists):
+            sql = '''
+                    insert into logs (count, user_id, create_datetime, category, set_idx)
+                    values (%s, 1, %s, %s, %s)
+                '''
+            # cursor.execute(sql, (count, datetime.now().strftime('%Y-%m-%d 00:00:00'), category))
+            cursor.execute(sql, (len(item), request.args.get('date'), category, idx + 1))
+        db.commit()
+    except:
+        db.rollback()
+    finally:
+        cursor.close()
 
     return str(count)
 
@@ -105,9 +121,16 @@ def community_detail():
     id = request.args.get('id')
     sql = '''SELECT * FROM QUESTION WHERE ID = %s'''
     cursor.execute(sql, (id))
-    data = cursor.fetchall()
+    question = cursor.fetchall()
+    sql_answer = '''SELECT * FROM ANSWER WHERE question_id = %s'''
+    cursor.execute(sql_answer, (id))
+    answer = cursor.fetchall()
     cursor.close()
-    return jsonify(data)
+    result = {
+        'question': question,
+        'answer': answer
+    }
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
